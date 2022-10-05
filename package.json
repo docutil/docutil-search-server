@@ -1,0 +1,52 @@
+{
+  "name": "docutil-search-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "watchexec -w src -r node -- --loader @esbuild-kit/esm-loader src/index.ts"
+  },
+  "type": "module",
+  "author": "no_name",
+  "license": "MIT",
+  "prettier": {
+    "printWidth": 120,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "arrowParens": "avoid",
+    "endOfLine": "auto"
+  },
+  "eslintConfig": {
+    "env": {
+      "es2021": true,
+      "commonjs": true,
+      "browser": true,
+      "node": true,
+      "worker": true,
+      "mocha": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "plugins": [
+      "prettier"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:prettier/recommended"
+    ]
+  },
+  "devDependencies": {
+    "@esbuild-kit/esm-loader": "^2.0.0",
+    "@types/node": "^16.0.0",
+    "esbuild": "^0.15.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^8.0.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.0.0",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "uWebSockets.js": "git+https://ghproxy.com/https://github.com/uNetworking/uWebSockets.js#v20.10.0"
+  }
+}
