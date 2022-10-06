@@ -1,5 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 set -exo pipefail
 
-pnpm exec esbuild --bundle --keep-names --format=cjs --platform=node --target=node16 --outfile=dist/server.js src/index.ts
+pnpm exec esbuild src/index.ts \
+    --bundle \
+    --keep-names \
+    --format=cjs \
+    --platform=node \
+    --target=node16 \
+    --outfile=dist/server.js
