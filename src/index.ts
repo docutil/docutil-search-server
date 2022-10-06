@@ -1,7 +1,7 @@
 import { App } from 'uWebSockets.js';
 import { handleSearch, handleSyncHook, handleStatus } from './_handlers';
 
-const PORT = parseInt(process.env.DSS_PORT || '10099')
+const PORT = parseInt(process.env.DSS_PORT || '10099');
 
 const app = App();
 app.any(`/api/v1/:site/hook`, handleSyncHook);
