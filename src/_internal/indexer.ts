@@ -1,6 +1,6 @@
 import { MeiliSearch, Index } from 'meilisearch';
 import { createSiteIndexRecords } from './md_utils';
-import { IndexRecord } from './_common';
+import { IndexRecord, getConfig } from './_common';
 
 function initMeiliSearchClient(): MeiliSearch {
   return new MeiliSearch({

@@ -15,7 +15,7 @@ export function checksum(str: string): string {
 
 export async function checksumFile(path: string): Promise<string> {
   const fileStat = await stat(path);
-  if (!fileStat.isFile()) {
+  if (!fileStat.isFile) {
     throw new Error('not a file');
   }
 
@@ -31,4 +31,14 @@ export async function checksumFile(path: string): Promise<string> {
       resolve(result);
     });
   });
+}
+
+export interface SiteConfig {
+  repoUrl: string;
+  path: string;
+  docPath: string;
+}
+
+export function getConfig(key: string): SiteConfig {
+  throw new Error('TODO');
 }
