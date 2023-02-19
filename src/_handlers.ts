@@ -1,20 +1,8 @@
 import { startRefreshIndexes, searchWithKeyword } from './_internal/indexer';
-import type { HttpRequest, HttpResponse } from 'uWebSockets.js';
+import type {Request, Response} from 'express'
 
 function validSignature(src: any) {
   return true;
-}
-
-function parseAsJson(res: HttpResponse): Promise<object & { after: string }> {
-  return new Promise<string>(resolve => {
-    const buf: Uint8Array[] = [];
-    res.onData((chunk, isLast) => {
-      buf.push(new Uint8Array(chunk.slice(0, chunk.byteLength)));
-      if (isLast) {
-        resolve(Buffer.concat(buf).toString());
-      }
-    });
-  }).then(doc => JSON.parse(doc));
 }
 
 function handleHook(siteName: string, commitId: string, requestSignature: string) {
@@ -26,52 +14,34 @@ function handleHook(siteName: string, commitId: string, requestSignature: string
   startRefreshIndexes(siteName, commitId);
 }
 
-export async function handleSyncHook(res: HttpResponse, req: HttpRequest) {
-  res.onAborted(() => {
-    res.aborted = true;
-  });
+export async function handleSyncHook(req: Request<{site: string}, object & { after: string }>, res: Response) {
+  const siteName = req.params.site;
 
-  const siteName = req.getParameter(0);
-  if (!siteName) {
-    res.writeStatus('400 ').end(JSON.stringify({ message: 'require some parameter' }));
+  if(!siteName) {
+    throw new Error('require site name')
   }
 
-  const requestSignature = req.getHeader('X-Hub-Signature-256') || req.getHeader('x-hub-signature-256');
-  const reqBody = await parseAsJson(res);
+  const requestSignature = (req.headers['X-Hub-Signature-256'] || req.headers['x-hub-signature-256']) as string
+  const reqBody = req.body;
 
   handleHook(siteName, reqBody.after, requestSignature);
-  if (!res.aborted) {
-    res.end();
-  }
+  res.json({})
 }
 
-export async function handleSearch(res: HttpResponse, req: HttpRequest) {
-  let aborted = false;
-  res.onAborted(() => {
-    aborted = true;
-  });
-
-  const siteName = req.getParameter(0);
-  if (!siteName) {
-    res.writeStatus('400 ').end(JSON.stringify({ message: 'require some parameter' }));
-  }
-
-  const keyword = req.getQuery('keyword');
-  const pageIndex = parseInt(req.getQuery('pageIndex'));
-  const pageSize = parseInt(req.getQuery('pageSize'));
+export async function handleSearch(req: Request, res: Response) {
+  const siteName = req.params.site;
+  const keyword = req.query.keyword as unknown as string;
+  const pageIndex = parseInt(req.query.pageIndex as unknown as string);
+  const pageSize = parseInt(req.query.pageSize as unknown as string);
 
   if (keyword && pageIndex && pageSize) {
     const result = await searchWithKeyword(siteName, keyword, pageIndex, pageSize);
-    res.write(JSON.stringify(result));
+    res.json(result);
   } else {
-    res.writeStatus('400 ').write(JSON.stringify({ message: 'require some parameter' }));
-  }
-
-  if (!aborted) {
-    res.end();
+    res.status(400).json({ message: 'require some parameter' })
   }
 }
 
-export function handleStatus(res: HttpResponse): void {
-  res.writeStatus('200 OK').end(JSON.stringify({ status: 'ok' }));
+export function handleStatus(req: Request, res: Response): void {
+  res.json({status: 'ok'})
 }
