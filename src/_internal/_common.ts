@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { createReadStream, stat } from 'fs-extra';
 
 export interface IndexRecord {
@@ -22,7 +22,7 @@ export async function checksumFile(path: string): Promise<string> {
   const hash = createHash('sha1');
   const reader = createReadStream(path);
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     hash.setEncoding('hex');
     reader.pipe(hash, { end: false });
     reader.on('end', () => {

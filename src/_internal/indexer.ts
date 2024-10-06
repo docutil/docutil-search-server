@@ -1,6 +1,6 @@
-import { MeiliSearch, Index } from 'meilisearch';
+import { MeiliSearch, type Index } from 'meilisearch';
+import { getConfig, type IndexRecord } from './_common';
 import { createSiteIndexRecords } from './md_utils';
-import { IndexRecord, getConfig } from './_common';
 
 function initMeiliSearchClient(): MeiliSearch {
   return new MeiliSearch({
@@ -51,10 +51,10 @@ class DocSiteIndex {
 
 class IndexerTasks {
   _list: Task[] = [];
-  _running: boolean = false;
+  _running = false;
 
   push(task: Task): void {
-    const found = this._list.find(it => it.indexName === task.indexName && it.commitId === it.commitId);
+    const found = this._list.find((it) => it.indexName === task.indexName && it.commitId === task.commitId);
     if (found) {
       return;
     }
